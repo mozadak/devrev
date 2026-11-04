@@ -1,0 +1,28 @@
+name: macOS build (VST3 + AU)
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  mac:
+    runs-on: macos-14
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build universal + checks (DSP, validator, auval)
+        id: universal
+        continue-on-error: true
+        run: CI=1 ./build-mac.sh
+      - name: Fallback - Apple Silicon only
+        if: steps.universal.outcome != 'success'
+        run: |
+          rm -rf build-mac dist-mac
+          CI=1 ARCHS=arm64 ./build-mac.sh
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: DevRev-mac
+          path: |
+            dist-mac/DevRev-1.0-mac.zip
+            dist-mac/validator.log
+            dist-mac/auval.log
+          if-no-files-found: error

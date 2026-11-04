@@ -1,0 +1,29 @@
+#include <winver.h>
+#include "../source/version.h"
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION MAJOR_VERSION_INT,MINOR_VERSION_INT,SUB_VERSION_INT,0
+ PRODUCTVERSION MAJOR_VERSION_INT,MINOR_VERSION_INT,SUB_VERSION_INT,0
+ FILEFLAGSMASK 0x3fL
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040004e4"
+        BEGIN
+            VALUE "FileVersion", VERSION_STR
+            VALUE "ProductVersion", VERSION_STR
+            VALUE "OriginalFilename", "DevRev.vst3"
+            VALUE "FileDescription", "DevRev - speech dereverberation (VST3, 64-bit)"
+            VALUE "InternalName", "DevRev"
+            VALUE "ProductName", "DevRev"
+            VALUE "CompanyName", "DevRev"
+            VALUE "LegalCopyright", "DevRev"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x400, 1252
+    END
+END

@@ -1,0 +1,29 @@
+DevRev 1.0 - macOS (Apple Silicon + Intel) - VST3 ve Audio Unit
+================================================================
+
+ICERIK
+- DevRev.vst3       -> Premiere Pro, Reaper, Ableton Live, Cubase, Resolve (Fairlight) vb.
+- DevRev.component  -> Logic Pro, GarageBand, Final Cut Pro (Audio Unit)
+
+KURULUM
+1. Finder'da Git > Klasore Git... (Shift+Cmd+G) secip yazin:  ~/Library/Audio/Plug-Ins
+2. DevRev.vst3 dosyasini "VST3" klasorune, DevRev.component dosyasini "Components" klasorune kopyalayin.
+3. Eklenti Apple tarafindan imzali (notarize) degildir. Internetten indirildigi icin macOS engelleyebilir.
+   Terminal'i acip su iki satiri calistirin:
+     xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/VST3/DevRev.vst3
+     xattr -dr com.apple.quarantine ~/Library/Audio/Plug-Ins/Components/DevRev.component
+4. Programi tamamen kapatip yeniden acin.
+
+PREMIERE PRO : Ayarlar > Ses > Ses Eklentisi Yoneticisi > "Eklenti Tara".
+LOGIC PRO    : Ilk acilista AU'lari tarar; "DevRev" Audio FX > DevRev altinda.
+REAPER       : Settings > Plug-ins > VST > Re-scan.  ABLETON: Settings > Plug-ins > Rescan.
+
+KONTROLLER (Windows surumuyle ayni)
+- DeReverb 0-150 % (80) ana miktar  - Repair 0-100 % (80) temiz ses onarimi
+- Ambience 0-100 % (10) kalan dogal oda  - Echo/Delay Removal On/Off
+- Output -12..+12 dB  - Bypass  - Gostergeler: Room RT60, Echo Delay, Reduction
+Gecikme 48 kHz'de 21 ms (otomatik telafi). Mono/stereo, 44.1-96 kHz.
+Ilk 2-4 saniyede odayi ogrenir. Zincirin basina koyun.
+
+LISANS: Steinberg VST3 SDK (MIT), Apple AudioUnitSDK (Apache 2.0).
+VST, Steinberg Media Technologies GmbH'nin ticari markasidir.
