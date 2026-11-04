@@ -7,7 +7,7 @@
 #   ARCHS=arm64 ./build-mac.sh  single architecture
 set -euo pipefail
 VST3_SDK_TAG="v3.8.1_build_84"
-AU_SDK_TAG="AudioUnitSDK-1.4.0"
+AU_SDK_TAG="AudioUnitSDK-1.3.0"
 ARCHS="${ARCHS:-arm64;x86_64}"
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 DEPS="$ROOT/deps"; BUILD="$ROOT/build-mac"; DIST="$ROOT/dist-mac"

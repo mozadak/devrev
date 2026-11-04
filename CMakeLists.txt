@@ -63,6 +63,10 @@ if(APPLE)
       BUNDLE_IDENTIFIER "com.localbuild.devrev.audiounit"
       INFO_PLIST_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/resource/au-info.plist
       VST3_PLUGIN_TARGET DevRev)
+    # Apple's AudioUnitSDK headers use C++20 (std::span, concepts)
+    set_target_properties(DevRev-AU PROPERTIES
+      CXX_STANDARD 20
+      XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++20")
   else()
     message(STATUS "DevRev: AU target skipped (needs -G Xcode and Apple's AudioUnitSDK)")
   endif()
