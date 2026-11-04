@@ -2,6 +2,8 @@ name: macOS build (VST3 + AU)
 on:
   push:
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   mac:
     runs-on: macos-14
@@ -26,3 +28,13 @@ jobs:
             dist-mac/validator.log
             dist-mac/auval.log
           if-no-files-found: error
+      - name: Publish build to the mac-build branch
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p /tmp/pub && cp dist-mac/DevRev-1.0-mac.zip dist-mac/validator.log dist-mac/auval.log /tmp/pub/
+          cd /tmp/pub
+          git init -q -b mac-build
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "macOS build ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" mac-build
