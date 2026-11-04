@@ -1,0 +1,190 @@
+
+    AU Validation Tool
+    Version: 1.10.0 
+    Copyright 2003-2019, Apple Inc. All Rights Reserved.
+    Specify -h (-help) for command options
+
+--------------------------------------------------
+VALIDATING AUDIO UNIT: 'aufx' - 'dvrv' - 'DvRv'
+--------------------------------------------------
+Manufacturer String: DevRev
+AudioUnit Name: DevRev
+Component Version: 1.0.0 (0x10000)
+
+* * PASS
+--------------------------------------------------
+TESTING OPEN TIMES:
+COLD:
+Time to open AudioUnit:         19.739 ms
+WARM:
+Time to open AudioUnit:         0.104  ms
+This AudioUnit is a version 2 implementation.
+FIRST TIME:
+Time for initialization:        7.907 ms
+
+* * PASS
+--------------------------------------------------
+VERIFYING DEFAULT SCOPE FORMATS:
+Input Scope Bus Configuration:
+ Default Bus Count:1
+    Bus Name: Input
+    Default Format: AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+
+Output Scope Bus Configuration:
+ Default Bus Count:1
+    Bus Name: Output
+    Default Format: AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+
+* * PASS
+--------------------------------------------------
+VERIFYING REQUIRED PROPERTIES:
+
+* * PASS
+--------------------------------------------------
+VERIFYING RECOMMENDED PROPERTIES:
+  VERIFYING PROPERTY: Latency
+    PASS
+  VERIFYING PROPERTY: Tail Time
+WARNING: Recommended Property is not supported
+
+  VERIFYING PROPERTY: Bypass Effect
+    PASS
+
+* * PASS
+--------------------------------------------------
+VERIFYING OPTIONAL PROPERTIES:
+
+* * PASS
+--------------------------------------------------
+VERIFYING SPECIAL PROPERTIES:
+
+VERIFYING CUSTOM UI
+Cocoa Views Available: 1
+  SMTG_AUCocoaUIBase_DevRev2026308163155
+    PASS
+
+VERIFYING CLASS INFO
+    PASS
+
+TESTING HOST CALLBACKS
+    PASS
+
+* * PASS
+--------------------------------------------------
+PUBLISHED PARAMETER INFO:
+
+# # # 8 Global Scope Parameters:
+Parameter ID:0
+Name: DeReverb
+Parameter Type: %
+Values: Minimum = 0, Default = 80, Maximum = 150
+Flags: Values Have Strings, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:1
+Name: Repair
+Parameter Type: %
+Values: Minimum = 0, Default = 80, Maximum = 100
+Flags: Values Have Strings, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:2
+Name: Ambience
+Parameter Type: %
+Values: Minimum = 0, Default = 10, Maximum = 100
+Flags: Values Have Strings, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:3
+Name: Echo/Delay Removal
+Parameter Type: Boolean
+Values: Minimum = Off, Default = On, Maximum = On
+Flags: Values Have Strings, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:4
+Name: Output
+Parameter Type: dB
+Values: Minimum = -12.0, Default = 0.0, Maximum = 12.0
+Flags: Values Have Strings, Readable, Writable 
+  -parameter PASS
+
+Parameter ID:100
+Name: Room RT60
+Parameter Type: s
+Values: Minimum = 0.00, Default = 0.00, Maximum = 3.00
+Flags: Values Have Strings, Not Real Time, Readable, 
+  -parameter PASS
+
+Parameter ID:101
+Name: Echo Delay
+Parameter Type: ms
+Values: Minimum = 0, Default = 0, Maximum = 1000
+Flags: Values Have Strings, Not Real Time, Readable, 
+  -parameter PASS
+
+Parameter ID:102
+Name: Reduction
+Parameter Type: dB
+Values: Minimum = 0.0, Default = 0.0, Maximum = -40.0
+Flags: Values Have Strings, Not Real Time, Readable, 
+  -parameter PASS
+
+Testing that parameters retain value across reset and initialization
+  PASS
+
+* * PASS
+--------------------------------------------------
+FORMAT TESTS:
+
+Reported Channel Capabilities (explicit):
+      [2, 2]  [1, 1]  
+
+Input/Output Channel Handling:
+1-1   1-2   1-4   1-5   1-6   1-7   1-8   2-2   2-4   2-5   2-6   2-7   2-8   4-4   4-5   5-5   6-6   7-7   8-8
+X                                         X                                                                       
+
+* * PASS
+--------------------------------------------------
+RENDER TESTS:
+
+Input Format: AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+Output Format: AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+Render Test at 512 frames
+Slicing Render Test at 64 frames
+  PASS
+
+
+Render Test at 64 frames, sample rate: 22050 Hz
+Render Test at 137 frames, sample rate: 96000 Hz
+Render Test at 4096 frames, sample rate: 48000 Hz
+Render Test at 4096 frames, sample rate: 192000 Hz
+Render Test at 4096 frames, sample rate: 11025 Hz
+Render Test at 512 frames, sample rate: 44100 Hz
+  PASS
+
+1 Channel Test:
+Render Test at 512 frames
+  PASS
+
+Checking connection semantics:
+Connection format:
+AudioStreamBasicDescription:  2 ch,  44100 Hz, Float32, deinterleaved
+  PASS
+
+Bad Max Frames - Render should fail
+  PASS
+
+Checking parameter setting
+Using AudioUnitSetParameter
+Using AudioUnitScheduleParameter
+  PASS
+
+Test MIDI
+WARNING: AU implements MusicDeviceMIDIEvent but is of type 'aufx' (it should be 'aumf')
+  PASS
+
+* * PASS
+--------------------------------------------------
+AU VALIDATION SUCCEEDED.
+--------------------------------------------------
