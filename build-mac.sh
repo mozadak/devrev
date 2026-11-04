@@ -61,25 +61,64 @@ cp "$ROOT/MAC-KURULUM.txt" "$DIST/"
             && ditto -c -k --keepParent DevRev.component DevRev-mac-au.zip \
             && zip -qry DevRev-1.0-mac.zip DevRev.vst3 DevRev.component MAC-KURULUM.txt)
 
+say "Yukleyici (.pkg) ve DMG"
+PKGROOT="$BUILD/pkgroot"; PKGW="$BUILD/pkgwork"; rm -rf "$PKGROOT" "$PKGW"
+mkdir -p "$PKGROOT/Library/Audio/Plug-Ins/VST3" "$PKGROOT/Library/Audio/Plug-Ins/Components" "$PKGW/scripts" "$PKGW/dmg"
+cp -R "$DIST/DevRev.vst3" "$PKGROOT/Library/Audio/Plug-Ins/VST3/"
+cp -R "$DIST/DevRev.component" "$PKGROOT/Library/Audio/Plug-Ins/Components/"
+cat > "$PKGW/scripts/postinstall" <<'EOS'
+#!/bin/bash
+# refresh the Audio Unit cache so Logic/GarageBand see DevRev at once
+killall -9 AudioComponentRegistrar 2>/dev/null || true
+exit 0
+EOS
+chmod +x "$PKGW/scripts/postinstall"
+# never let Installer "relocate" the bundles to an older copy somewhere else
+pkgbuild --analyze --root "$PKGROOT" "$PKGW/components.plist"
+plutil -replace BundleIsRelocatable -bool NO "$PKGW/components.plist" 2>/dev/null || true
+for i in 0 1 2 3; do plutil -replace $i.BundleIsRelocatable -bool NO "$PKGW/components.plist" 2>/dev/null || true; done
+pkgbuild --root "$PKGROOT" --component-plist "$PKGW/components.plist" --identifier com.localbuild.devrev \
+  --version 1.0.0 --install-location / --scripts "$PKGW/scripts" "$PKGW/DevRev-core.pkg"
+cat > "$PKGW/distribution.xml" <<'EOS'
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+  <title>DevRev 1.0</title>
+  <options customize="never" require-scripts="false" hostArchitectures="arm64,x86_64"/>
+  <domains enable_localSystem="true"/>
+  <choices-outline><line choice="devrev"/></choices-outline>
+  <choice id="devrev" title="DevRev (VST3 + Audio Unit)"><pkg-ref id="com.localbuild.devrev"/></choice>
+  <pkg-ref id="com.localbuild.devrev" version="1.0.0">DevRev-core.pkg</pkg-ref>
+</installer-gui-script>
+EOS
+productbuild --distribution "$PKGW/distribution.xml" --package-path "$PKGW" "$DIST/DevRev Installer.pkg"
+cp "$DIST/DevRev Installer.pkg" "$PKGW/dmg/"
+cp "$ROOT/MAC-KURULUM.txt" "$PKGW/dmg/Kurulum - Oku.txt"
+rm -f "$DIST/DevRev-1.0.dmg"
+hdiutil create -volname "DevRev 1.0" -srcfolder "$PKGW/dmg" -ov -format UDZO "$DIST/DevRev-1.0.dmg"
+ls -la "$DIST"
+
 [ "${NO_INSTALL:-0}" = "1" ] && { say "Bitti: $DIST"; exit 0; }
 
-say "Kuruluyor: ~/Library/Audio/Plug-Ins"
-mkdir -p "$HOME/Library/Audio/Plug-Ins/VST3" "$HOME/Library/Audio/Plug-Ins/Components"
-rm -rf "$HOME/Library/Audio/Plug-Ins/VST3/DevRev.vst3" "$HOME/Library/Audio/Plug-Ins/Components/DevRev.component"
-cp -R "$DIST/DevRev.vst3" "$HOME/Library/Audio/Plug-Ins/VST3/"
-cp -R "$DIST/DevRev.component" "$HOME/Library/Audio/Plug-Ins/Components/"
-xattr -dr com.apple.quarantine "$HOME/Library/Audio/Plug-Ins/VST3/DevRev.vst3" 2>/dev/null || true
-xattr -dr com.apple.quarantine "$HOME/Library/Audio/Plug-Ins/Components/DevRev.component" 2>/dev/null || true
-killall -9 AudioComponentRegistrar 2>/dev/null || true
-
 if [ "${CI:-0}" != "0" ]; then
-  say "Steinberg validator"
+  say "CI: DMG'den yukleyiciyi calistir"
+  MNT="$(hdiutil attach -nobrowse -readonly "$DIST/DevRev-1.0.dmg" | awk -F'\t' '/\/Volumes\//{print $NF}' | tail -1)"
+  echo "DMG: $MNT"; ls -la "$MNT"
+  sudo installer -pkg "$MNT/DevRev Installer.pkg" -target /
+  hdiutil detach "$MNT" -quiet || true
+  V="/Library/Audio/Plug-Ins/VST3/DevRev.vst3"; C="/Library/Audio/Plug-Ins/Components/DevRev.component"
+  [ -d "$V" ] && [ -d "$C" ] || fail "yukleyici dosyalari dogru yere koymadi"
+  codesign --verify --deep --strict "$V"; codesign --verify --deep --strict "$C"
+  say "Steinberg validator (kurulu VST3)"
   cmake --build "$BUILD" --config Release --target validator -- -quiet || echo "validator derlenemedi"
   VAL="$(find "$BUILD" -name validator -type f -perm -u+x | head -1)"
-  if [ -n "$VAL" ]; then "$VAL" "$DIST/DevRev.vst3" > "$DIST/validator.log" 2>&1 || true; grep "Result:" "$DIST/validator.log" | tail -1; fi
-  say "auval"
+  if [ -n "$VAL" ]; then "$VAL" "$V" > "$DIST/validator.log" 2>&1 || true; grep "Result:" "$DIST/validator.log" | tail -1; fi
+  say "auval (kurulu AU)"
   sleep 3
   auval -v aufx dvrv DvRv > "$DIST/auval.log" 2>&1 && echo "AU VALIDATION SUCCEEDED" || { tail -40 "$DIST/auval.log"; fail "auval basarisiz"; }
-  grep -E "AU VALIDATION|PASS" "$DIST/auval.log" | tail -3
+  grep -E "AU VALIDATION" "$DIST/auval.log" | tail -1
+  say "Bitti"; exit 0
 fi
+
+say "Kuruluyor (yonetici sifresi istenebilir)"
+sudo installer -pkg "$DIST/DevRev Installer.pkg" -target /
 say "Bitti"
